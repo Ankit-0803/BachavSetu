@@ -2,12 +2,12 @@ import bcrypt from 'bcryptjs';
 
 export const mockUsers = [
   {
-    name: 'Soumava Banerjee',
-    userName: 'Soumava21',
-    email: 'soumava.rivu@gmail.com',
+    name: 'Ankit K',
+    userName: 'AK22',
+    email: 'Ankit.k@gmail.com',
     password: bcrypt.hashSync('frost1234', 10),
-    adhaarNumber: 727456789023,
-    phoneNumber: 8777724254,
+    adhaarNumber: 111122334455,
+    phoneNumber: 1234567890,
     assignments: [],
     isAdmin: true,
     geometry: {
@@ -16,9 +16,9 @@ export const mockUsers = [
     },
   },
   {
-    name: 'Shubham Dutta',
-    email: 'shubhamduttanovember@gmail.com',
-    userName: 'ShubhamDutta21',
+    name: 'Vaibhav Tiwade',
+    email: 'vaibhavtiwade@gmail.com',
+    userName: 'vaibhavt21',
     password: bcrypt.hashSync('frost1234', 10),
     adhaarNumber: 727456789023,
     assignments: [],
