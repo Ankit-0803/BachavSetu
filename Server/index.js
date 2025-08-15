@@ -6,7 +6,7 @@ import * as dotenv from 'dotenv';
 import { connectDB } from './Config/db.js';
 
 // Import ALL routers from index.js in Route folder
-import { homeRouter, assignmentsRouter, suppliesRouter, authRouter } from './Route/index.js';
+import { homeRouter, assignmentsRouter, suppliesRouter, authRouter, incidentsRouter } from './Route/index.js';
 import { errorHandler, notFoundHandler } from './Middleware/index.js';
 
 dotenv.config();
@@ -30,6 +30,7 @@ app.use(homeRouter);
 app.use('/assignments', assignmentsRouter);
 app.use('/supplies', suppliesRouter);
 app.use('/auth', authRouter);
+app.use('/incidents', incidentsRouter); // ADD THIS LINE
 
 // Error handlers
 app.use(errorHandler);

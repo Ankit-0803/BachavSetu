@@ -1,3 +1,4 @@
+/* Container and Layout */
 .App {
   text-align: center;
   max-width: 1200px;
@@ -5,6 +6,7 @@
   padding: 20px;
 }
 
+/* Header Styles */
 .App-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -18,6 +20,7 @@
   font-size: 2.5rem;
 }
 
+/* Dashboard Sections */
 .dashboard {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -38,6 +41,7 @@
   font-size: 1.5rem;
 }
 
+/* Assignments List */
 .assignments-list {
   display: flex;
   flex-direction: column;
@@ -73,7 +77,9 @@
   color: #666;
 }
 
-.assign-btn, .complete-btn {
+/* Buttons for Assign/Complete */
+.assign-btn,
+.complete-btn {
   background: #28a745;
   color: white;
   border: none;
@@ -81,16 +87,19 @@
   border-radius: 5px;
   cursor: pointer;
   margin-top: 10px;
+  transition: opacity 0.2s;
 }
 
 .assign-btn {
   background: #007bff;
 }
 
-.assign-btn:hover, .complete-btn:hover {
+.assign-btn:hover,
+.complete-btn:hover {
   opacity: 0.9;
 }
 
+/* Supplies Grid */
 .supplies-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -126,6 +135,7 @@
   color: #666;
 }
 
+/* User Info */
 .user-info {
   text-align: right;
   font-size: 0.9rem;
@@ -136,14 +146,14 @@
   text-decoration: none;
 }
 
-/* ===== LOGIN FORM STYLES (NEW) ===== */
+/* ===== LOGIN FORM STYLES ===== */
 .login-form {
   max-width: 400px;
   margin: 50px auto;
   padding: 30px;
   background: #f8f9fa;
   border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 .login-form h2 {
@@ -161,10 +171,11 @@
   margin-bottom: 5px;
   font-weight: bold;
   color: #495057;
-  text-align: left;
 }
 
-.form-group input {
+.form-group input,
+.form-group select,
+.form-group textarea {
   width: 100%;
   padding: 10px;
   border: 1px solid #ced4da;
@@ -176,7 +187,7 @@
 .form-group input:focus {
   outline: none;
   border-color: #007bff;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+  box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
 }
 
 .login-form button {
@@ -223,7 +234,7 @@
   margin: 5px 0;
 }
 
-/* ===== LOGOUT BUTTON STYLES ===== */
+/* ===== LOGOUT BUTTON STYLE ===== */
 .logout-btn {
   background: #dc3545;
   color: white;
@@ -239,6 +250,7 @@
   background: #c82333;
 }
 
+/* Responsive – Small screens */
 @media (max-width: 768px) {
   .dashboard {
     grid-template-columns: 1fr;
@@ -247,15 +259,17 @@
   .supplies-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .login-form {
     margin: 20px;
     padding: 20px;
   }
-  
+
   .assignment-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
   }
+
+  /* Incident report modal adjustments can also go here if needed */
 }

@@ -57,7 +57,7 @@ const LoginForm = () => {
       
       <div className="demo-credentials">
         <p><strong>Demo Login:</strong></p>
-        <p>Username: Soumava21 | Password: frost1234</p>
+        <p>Username: AK22 | Password: frost1234</p>
       </div>
     </div>
   );
