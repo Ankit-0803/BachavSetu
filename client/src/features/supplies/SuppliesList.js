@@ -1,6 +1,6 @@
 import React from 'react';
 
-const SuppliesList = ({ supplies }) => {
+const SuppliesList = ({ supplies = [] }) => {
   return (
     <div className="supplies-list">
       {supplies.length === 0 ? (

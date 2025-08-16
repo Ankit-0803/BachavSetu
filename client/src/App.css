@@ -13,32 +13,106 @@
   padding: 30px;
   border-radius: 10px;
   margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .App-header h1 {
-  margin: 0 0 15px 0;
+  margin: 0;
   font-size: 2.5rem;
 }
 
-/* Dashboard Sections */
-.dashboard {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 30px;
-  margin-top: 20px;
+/* Tab Navigation */
+.tab-navigation {
+  display: flex;
+  justify-content: center;
+  background: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  padding: 10px 0;
+  margin-bottom: 20px;
+  border-radius: 8px 8px 0 0;
 }
 
+.tab-btn {
+  background: transparent;
+  border: none;
+  padding: 12px 24px;
+  margin: 0 5px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  color: #495057;
+}
+
+.tab-btn:hover {
+  background: #e9ecef;
+  color: #007bff;
+}
+
+.tab-btn.active {
+  background: #007bff;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0,123,255,0.3);
+}
+
+.main-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Dashboard Sections */
 .dashboard-section {
   background: #f8f9fa;
   padding: 25px;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
 }
 
 .dashboard-section h2 {
   color: #343a40;
   margin-bottom: 20px;
   font-size: 1.5rem;
+  text-align: left;
+}
+
+/* Report Incident Button */
+.report-incident-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.report-incident-btn:hover {
+  background: #c82333;
+}
+
+/* Add Button */
+.add-btn {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background 0.2s;
+  margin-bottom: 20px;
+}
+
+.add-btn:hover {
+  background: #218838;
 }
 
 /* Assignments List */
@@ -139,11 +213,24 @@
 .user-info {
   text-align: right;
   font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
 }
 
 .user-info a {
   color: #ffd700;
   text-decoration: none;
+}
+
+.admin-badge {
+  background: #28a745;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  margin-left: 8px;
 }
 
 /* ===== LOGIN FORM STYLES ===== */
@@ -164,6 +251,7 @@
 
 .form-group {
   margin-bottom: 20px;
+  text-align: left;
 }
 
 .form-group label {
@@ -243,7 +331,7 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.8rem;
-  margin-left: 10px;
+  transition: background 0.2s;
 }
 
 .logout-btn:hover {
@@ -252,10 +340,27 @@
 
 /* Responsive – Small screens */
 @media (max-width: 768px) {
-  .dashboard {
-    grid-template-columns: 1fr;
+  .App-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
   }
   
+  .App-header h1 {
+    font-size: 2rem;
+  }
+
+  .tab-navigation {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .tab-btn {
+    font-size: 14px;
+    padding: 8px 16px;
+    margin: 2px;
+  }
+
   .supplies-grid {
     grid-template-columns: 1fr;
   }
@@ -271,5 +376,8 @@
     gap: 10px;
   }
 
-  /* Incident report modal adjustments can also go here if needed */
+  .user-info {
+    align-items: center;
+    text-align: center;
+  }
 }

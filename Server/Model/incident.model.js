@@ -1,63 +1,44 @@
 import mongoose from 'mongoose';
 
 const incidentSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    required: true,
-    maxlength: 200
-  },
-  description: {
-    type: String,
-    required: true,
-    maxlength: 1000
-  },
-  reportedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
+  title: { type: String, required: true, maxlength: 200 },
+  description: { type: String, required: true, maxlength: 1000 },
+  reportedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   location: {
-    type: {
-      type: String,
-      enum: ['Point'],
-      required: true
-    },
-    coordinates: {
-      type: [Number],
-      required: true
-    }
+    type: { type: String, enum: ['Point'], required: true },
+    coordinates: { type: [Number], required: true },
   },
   severity: {
     type: String,
     enum: ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'],
-    default: 'MEDIUM'
+    default: 'MEDIUM',
   },
   category: {
     type: String,
     enum: ['FIRE', 'FLOOD', 'EARTHQUAKE', 'MEDICAL', 'ACCIDENT', 'OTHER'],
-    required: true
+    required: true,
   },
   status: {
     type: String,
     enum: ['REPORTED', 'ASSIGNED', 'IN_PROGRESS', 'RESOLVED'],
-    default: 'REPORTED'
+    default: 'REPORTED',
   },
-  images: [{
-    type: String // URLs to uploaded images
-  }],
-  assignmentCreated: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Assignment'
-  },
+  images: [{ type: String }], // urls to uploaded images
+  assignmentCreated: { type: mongoose.Schema.Types.ObjectId, ref: 'Assignment' },
   contactInfo: {
     phone: String,
-    email: String
-  }
-}, {
-  timestamps: true
-});
+    email: String,
+  },
+  // Fixed: Properly define requestedSupplies structure
+  requestedSupplies: [{
+    item: { type: String, required: true },
+    quantity: { type: Number, required: true },
+    people: { type: Number, required: true }
+  }],
+  supplyRequest: { type: mongoose.Schema.Types.ObjectId, ref: 'SupplyRequest' },
+}, { timestamps: true });
 
-// Index for geospatial queries
+// Geospatial Index for location queries
 incidentSchema.index({ location: '2dsphere' });
 
 const Incident = mongoose.model('Incident', incidentSchema);

@@ -1,30 +1,13 @@
 import mongoose from 'mongoose';
-import { customAlphabet } from 'nanoid';
-const nanoid = customAlphabet('1234567890ABCDEFGHIJKLMNOP', 10);
 
-const SupplySchema = new mongoose.Schema(
-  {
-    productName: {
-      type: String,
-    },
-    quantity: {
-      type: Number,
-      default: 0,
-    },
-    unit: {
-      type: String,
-      default: 'units',
-    },
-    batch: {
-      type: String,
-    },
-  },
-  { timestamps: true }
-);
+const supplySchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  category: { type: String, enum: ['FOOD', 'CLOTHES', 'SHELTER'], required: true },
+  quantity: { type: Number, required: true, default: 0 },
+  threshold: { type: Number, default: 10 }, // min alert level
+  location: { type: String, default: 'Main Warehouse' }, // could be expanded
+  description: { type: String }, // e.g. `/uploads/food_bachavSetu.jpg`
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+}, { timestamps: true });
 
-SupplySchema.pre('save', function (next) {
-  this.batch = nanoid();
-});
-
-const Supply = mongoose.model('Supply', SupplySchema);
-export default Supply;
+export default mongoose.model('Supply', supplySchema);
