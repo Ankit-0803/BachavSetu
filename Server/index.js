@@ -11,40 +11,53 @@ import {
   suppliesRouter,
   authRouter,
   incidentsRouter,
-  supplyRequestsRouter // Added supply requests router
+  supplyRequestsRouter
 } from './Route/index.js';
 import { errorHandler, notFoundHandler } from './Middleware/index.js';
 
+// Load environment variables
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const environment = process.env.NODE_ENV || 'development';
 
+// Connect to MongoDB
 await connectDB();
 
-app.use(cors());
+// Middleware
+app.use(cors({
+  origin: process.env.CLIENT_URL || 'http://localhost:3000',
+  credentials: true
+}));
 app.use(helmet());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-if (process.env.NODE_ENV !== 'test') app.use(morgan('dev'));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Logging in development
+if (environment !== 'production') {
+  app.use(morgan('dev'));
+}
 
 // Serve uploaded images
 const uploadDir = path.join(process.cwd(), 'uploads');
 app.use('/uploads', express.static(uploadDir));
 
-app.use(homeRouter);
+// Routes
+app.use('/', homeRouter);
+app.use('/auth', authRouter);
 app.use('/assignments', assignmentsRouter);
 app.use('/supplies', suppliesRouter);
-app.use('/auth', authRouter);
 app.use('/incidents', incidentsRouter);
-app.use('/supplyRequests', supplyRequestsRouter); // Added supply requests route
+app.use('/supplyRequests', supplyRequestsRouter);
 
-app.use(errorHandler);
+// Error handling
 app.use(notFoundHandler);
+app.use(errorHandler);
 
+// Start server
 app.listen(PORT, () => {
-  console.info(`app running on ${environment} mode at port ${PORT}`);
+  console.log(`🚀 Server running in ${environment} mode on port ${PORT}`);
 });
 
 export default app;

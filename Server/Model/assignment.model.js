@@ -1,45 +1,26 @@
 import mongoose from 'mongoose';
 import { nanoid } from 'nanoid';
 
-// Location schema for the user
 const GeoSchema = new mongoose.Schema({
-  type: {
+  type: { type: String, default: 'Point' },
+  coordinates: { type: [Number], index: '2dsphere' }
+});
+
+const AssignmentSchema = new mongoose.Schema({
+  area: GeoSchema,
+  status: {
     type: String,
-    default: 'point',
+    enum: ['REPORTED','ASSIGNED','IN_PROGRESS','RESOLVED','COMPLETED'],
+    default: 'REPORTED'
   },
-  coordinates: {
-    type: [Number],
-    index: '2dsphere',
-  },
+  supplies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Supply' }],
+  image: String,
+  hash: String
+}, { timestamps: true });
+
+AssignmentSchema.pre('save', function(next) {
+  if (!this.hash) this.hash = nanoid();
+  next();
 });
 
-const AssignmentSchema = new mongoose.Schema(
-  {
-    area: GeoSchema,
-    status: {
-      type: String,
-      enum: ['UPCOMING', 'COMPLETED', 'ASSIGNED'],
-      default: 'UPCOMING',
-    },
-    supplies: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Supply',
-      },
-    ],
-    image: {
-      type: String,
-    },
-    hash: {
-      type: String,
-    },
-  },
-  { timestamps: true }
-);
-
-AssignmentSchema.pre('save', function (next) {
-  this.hash = nanoid();
-});
-
-const Assignment = mongoose.model('Assignment', AssignmentSchema);
-export default Assignment;
+export default mongoose.model('Assignment', AssignmentSchema);

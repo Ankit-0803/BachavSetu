@@ -191,7 +191,7 @@ router.post(
       // Create assignment with proper structure
       const assignment = new Assignment({
         area: incident.location, // Use incident location
-        status: 'UPCOMING', // Start with UPCOMING status
+        status: 'REPORTED', // Start with UPCOMING status
         supplies: supplies || [], // Supplies array from request
       });
       
