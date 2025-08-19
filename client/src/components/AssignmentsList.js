@@ -1,6 +1,10 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAssignments, updateAssignmentStatus } from '../features/assignments/assignmentsSlice';
+import {
+  fetchAssignments,
+  updateAssignmentStatus,
+  deleteAssignment
+} from '../features/assignments/assignmentsSlice';
 import './AssignmentsList.css';
 
 const AssignmentsList = () => {
@@ -9,184 +13,103 @@ const AssignmentsList = () => {
 
   useEffect(() => {
     dispatch(fetchAssignments());
+    const interval = setInterval(() => dispatch(fetchAssignments()), 30000);
+    return () => clearInterval(interval);
   }, [dispatch]);
 
-  const handleStatusUpdate = (assignmentId, newStatus) => {
-    dispatch(updateAssignmentStatus({ id: assignmentId, status: newStatus }));
+  const handleStatusChange = (id, status) => {
+    dispatch(updateAssignmentStatus({ id, status }));
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm('Are you sure you want to remove this assignment?')) {
+      dispatch(deleteAssignment(id));
+    }
   };
 
   const getStatusColor = (status) => {
-    switch (status) {
-      case 'UPCOMING': return '#007bff';
+    switch(status) {
+      case 'REPORTED': return '#6c757d';
       case 'ASSIGNED': return '#17a2b8';
-      case 'COMPLETED': return '#28a745';
+      case 'IN_PROGRESS': return '#ffc107';
+      case 'RESOLVED': return '#28a745';
+      case 'COMPLETED': return '#343a40';
       default: return '#6c757d';
     }
   };
 
   const getStatusIcon = (status) => {
-    switch (status) {
-      case 'UPCOMING': return '📅';
+    switch(status) {
+      case 'REPORTED': return '📋';
       case 'ASSIGNED': return '👷';
+      case 'IN_PROGRESS': return '🏃';
+      case 'RESOLVED': return '🔒';
       case 'COMPLETED': return '✅';
       default: return '📋';
     }
   };
 
-  // Fixed formatCoordinates function
-  const formatCoordinates = (coordinates) => {
-    if (!coordinates || !Array.isArray(coordinates) || coordinates.length !== 2) {
-      return 'Unknown';
-    }
-    
-    const [longitude, latitude] = coordinates;
-    
-    // Check if both values are valid numbers
-    if (typeof longitude !== 'number' || typeof latitude !== 'number') {
-      return 'Invalid coordinates';
-    }
-    
-    return `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+  const formatCoords = (coords) => {
+    if(!Array.isArray(coords) || coords.length !== 2) return 'Unknown';
+    const [lng, lat] = coords.map(Number);
+    if(isNaN(lng) || isNaN(lat)) return 'Invalid';
+    return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
   };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
+  if (loading) return <div className="assignments-loading">Loading assignments…</div>;
+  if (error) return <div className="assignments-error">Error: {error}</div>;
 
-  if (loading) return <div className="assignments-loading">📋 Loading assignments...</div>;
-  if (error) return <div className="assignments-error">❌ Error: {error}</div>;
+  if(assignments.length === 0){
+    return (
+      <div className="assignments-empty">
+        <div className="empty-icon">📋</div>
+        <h3>No Assignments Found</h3>
+      </div>
+    );
+  }
 
   return (
     <div className="assignments-container">
-      <div className="assignments-header">
-        <div className="assignments-stats">
-          <div className="stat-card">
-            <span className="stat-number">{assignments.length}</span>
-            <span className="stat-label">Total</span>
-          </div>
-          <div className="stat-card upcoming">
-            <span className="stat-number">{assignments.filter(a => a.status === 'UPCOMING').length}</span>
-            <span className="stat-label">Upcoming</span>
-          </div>
-          <div className="stat-card assigned">
-            <span className="stat-number">{assignments.filter(a => a.status === 'ASSIGNED').length}</span>
-            <span className="stat-label">Assigned</span>
-          </div>
-          <div className="stat-card completed">
-            <span className="stat-number">{assignments.filter(a => a.status === 'COMPLETED').length}</span>
-            <span className="stat-label">Completed</span>
-          </div>
-        </div>
-      </div>
-
-      {assignments.length === 0 ? (
-        <div className="assignments-empty">
-          <div className="empty-icon">📋</div>
-          <h3>No Assignments Yet</h3>
-          <p>Assignments will appear here when created from incidents</p>
-        </div>
-      ) : (
-        <div className="assignments-grid">
-          {assignments.map(assignment => (
-            <div key={assignment._id} className="assignment-card">
-              <div className="assignment-header">
-                <div className="assignment-id">
-                  <span className="assignment-icon">🎯</span>
-                  <h3>Assignment #{assignment.hash || assignment._id.slice(-6)}</h3>
-                </div>
-                <div className="status-section">
-                  <span
-                    className="status-badge"
-                    style={{ backgroundColor: getStatusColor(assignment.status) }}
-                  >
-                    {getStatusIcon(assignment.status)} {assignment.status}
-                  </span>
-                </div>
+      <div className="assignments-grid">
+        {assignments.map(assignment => (
+          <div key={assignment._id} className="assignment-card">
+            <div className="assignment-header">
+              <div className="assignment-id">
+                <span className="assignment-icon">🎯</span>
+                <h3>#{assignment._id.slice(-6)}</h3>
               </div>
-
-              <div className="assignment-details">
-                <div className="detail-row">
-                  <span className="detail-icon">📍</span>
-                  <div className="detail-content">
-                    <strong>Location:</strong>
-                    <span className="coordinates">
-                      {formatCoordinates(assignment.area?.coordinates)}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="detail-row">
-                  <span className="detail-icon">📦</span>
-                  <div className="detail-content">
-                    <strong>Supplies:</strong>
-                    <span>{assignment.supplies?.length || 0} items assigned</span>
-                  </div>
-                </div>
-
-                {assignment.image && (
-                  <div className="detail-row">
-                    <span className="detail-icon">📸</span>
-                    <div className="detail-content">
-                      <strong>Evidence:</strong>
-                      <span>Image attached</span>
-                    </div>
-                  </div>
-                )}
-
-                <div className="detail-row">
-                  <span className="detail-icon">🕒</span>
-                  <div className="detail-content">
-                    <strong>Created:</strong>
-                    <span>{formatDate(assignment.createdAt)}</span>
-                  </div>
-                </div>
-
-                {assignment.updatedAt !== assignment.createdAt && (
-                  <div className="detail-row">
-                    <span className="detail-icon">🔄</span>
-                    <div className="detail-content">
-                      <strong>Last Updated:</strong>
-                      <span>{formatDate(assignment.updatedAt)}</span>
-                    </div>
-                  </div>
-                )}
+              <div className="status-section">
+                <span className="status-badge" style={{backgroundColor: getStatusColor(assignment.status)}}>
+                  {getStatusIcon(assignment.status)} {assignment.status.replace('_',' ')}
+                </span>
+                <button className="menu-btn" onClick={() => handleDelete(assignment._id)}>⋮</button>
               </div>
+            </div>
 
+            <div className="assignment-details">
+              <div className="detail-row">
+                <span className="detail-icon">📍</span>
+                <span className="detail-content">{formatCoords(assignment.area?.coordinates)}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-icon">📦</span>
+                <span className="detail-content">{assignment.supplies?.length || 0} items</span>
+              </div>
               <div className="assignment-actions">
-                <label className="status-label">Update Status:</label>
                 <select
-                  value={assignment.status}
-                  onChange={(e) => handleStatusUpdate(assignment._id, e.target.value)}
                   className="status-select"
+                  value={assignment.status}
+                  onChange={e => handleStatusChange(assignment._id, e.target.value)}
                 >
-                  <option value="UPCOMING">📅 Upcoming</option>
-                  <option value="ASSIGNED">👷 Assigned</option>
-                  <option value="COMPLETED">✅ Completed</option>
+                  {['REPORTED','ASSIGNED','IN_PROGRESS','RESOLVED','COMPLETED'].map(status => (
+                    <option key={status} value={status}>{status.replace('_', ' ')}</option>
+                  ))}
                 </select>
               </div>
-
-              {assignment.supplies && assignment.supplies.length > 0 && (
-                <div className="supplies-section">
-                  <h4 className="supplies-title">📋 Assigned Supplies:</h4>
-                  <ul className="supplies-list">
-                    {assignment.supplies.map((supply, index) => (
-                      <li key={index} className="supply-item">
-                        {supply.name || `Supply ${index + 1}`}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

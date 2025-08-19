@@ -1,109 +1,89 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { assignmentsAPI } from './assignmentsAPI';
 
-const initialState = {
-  assignments: [],
-  loading: false,
-  error: null,
-};
-
-// Fetch all assignments
-export const fetchAssignments = createAsyncThunk(
-  'assignments/fetchAssignments',
-  async () => {
-    return await assignmentsAPI.getAllAssignments();
-  }
+export const fetchAssignments = createAsyncThunk('assignments/fetch', async () =>
+  assignmentsAPI.getAllAssignments()
 );
 
-// Update assignment status
 export const updateAssignmentStatus = createAsyncThunk(
   'assignments/updateStatus',
-  async ({ id, status }) => {
-    return await assignmentsAPI.updateAssignment(id, { status });
+  async ({ id, status }, { dispatch }) => {
+    const updated = await assignmentsAPI.updateAssignment(id, { status });
+    dispatch(fetchAssignments());
+    return updated;
   }
 );
 
-// Create assignment from incident
+export const deleteAssignment = createAsyncThunk(
+  'assignments/delete',
+  async (id, { dispatch }) => {
+    await assignmentsAPI.deleteAssignment(id);
+    dispatch(fetchAssignments());
+    return id;
+  }
+);
+
 export const createAssignmentFromIncident = createAsyncThunk(
   'assignments/createFromIncident',
-  async ({ id, supplies }) => {
-    const response = await fetch(`${process.env.REACT_APP_API_BASE || 'http://localhost:5000'}/incidents/${id}/create-assignment`, {
+  async ({ id, supplies }, { dispatch }) => {
+    const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:5000';
+    const res = await fetch(`${API_BASE}/incidents/${id}/create-assignment`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+        Authorization: `Bearer ${localStorage.getItem('token')}`
       },
-      body: JSON.stringify({ supplies })
+      body: JSON.stringify({ supplies }),
     });
-    
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to create assignment');
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || 'Failed to create assignment');
     }
-    
-    return await response.json();
+
+    const assignment = await res.json();
+    dispatch(fetchAssignments());
+    return assignment;
   }
 );
 
-const assignmentsSlice = createSlice({
+const slice = createSlice({
   name: 'assignments',
-  initialState,
-  reducers: {
-    clearError: (state) => {
-      state.error = null;
-    },
-    addAssignment: (state, action) => {
-      state.assignments.unshift(action.payload);
-    },
-  },
-  extraReducers: (builder) => {
+  initialState: { assignments: [], loading: false, error: null },
+  reducers: {},
+  extraReducers: builder => {
     builder
-      // Fetch assignments
-      .addCase(fetchAssignments.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchAssignments.fulfilled, (state, action) => {
+      .addCase(fetchAssignments.pending, state => { state.loading = true; state.error = null; })
+      .addCase(fetchAssignments.fulfilled, (state, { payload }) => {
         state.loading = false;
-        state.assignments = action.payload;
+        state.assignments = payload;
       })
-      .addCase(fetchAssignments.rejected, (state, action) => {
+      .addCase(fetchAssignments.rejected, (state, { error }) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = error.message;
       })
-      
-      // Update assignment status
-      .addCase(updateAssignmentStatus.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(updateAssignmentStatus.fulfilled, (state, action) => {
+
+      .addCase(updateAssignmentStatus.pending, state => { state.loading = true; })
+      .addCase(updateAssignmentStatus.fulfilled, state => { state.loading = false; })
+      .addCase(updateAssignmentStatus.rejected, (state, { error }) => {
         state.loading = false;
-        const index = state.assignments.findIndex(a => a._id === action.payload._id);
-        if (index !== -1) {
-          state.assignments[index] = action.payload;
-        }
+        state.error = error.message;
       })
-      .addCase(updateAssignmentStatus.rejected, (state, action) => {
+
+      .addCase(createAssignmentFromIncident.pending, state => { state.loading = true; })
+      .addCase(createAssignmentFromIncident.fulfilled, state => { state.loading = false; })
+      .addCase(createAssignmentFromIncident.rejected, (state, { error }) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = error.message;
       })
-      
-      // Create assignment from incident
-      .addCase(createAssignmentFromIncident.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(createAssignmentFromIncident.fulfilled, (state, action) => {
+
+      .addCase(deleteAssignment.pending, state => { state.loading = true; })
+      .addCase(deleteAssignment.fulfilled, state => { state.loading = false; })
+      .addCase(deleteAssignment.rejected, (state, { error }) => {
         state.loading = false;
-        if (action.payload.assignment) {
-          state.assignments.unshift(action.payload.assignment);
-        }
-      })
-      .addCase(createAssignmentFromIncident.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
+        state.error = error.message;
       });
-  },
+  }
 });
 
-export const { clearError, addAssignment } = assignmentsSlice.actions;
-export default assignmentsSlice.reducer;
+export default slice.reducer;

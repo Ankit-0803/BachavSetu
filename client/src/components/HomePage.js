@@ -12,12 +12,12 @@ const HomePage = () => {
         <div className="hero-content">
           <div className="hero-text">
             <h1 className="hero-title">
-              🚒 <span className="brand">bachavSetu</span>
+              🚒 <span className="brand">BachavSetu</span>
             </h1>
-            <p className="hero-subtitle">Disaster Relief</p>
+            <p className="hero-subtitle"><strong>Disaster Relief Platform</strong></p>
             <p className="hero-description">
-              Connecting communities, coordinating resources, and saving lives during disasters. 
-              Join our network of volunteers and administrators working together for emergency preparedness.
+              <strong>Bridging communities with essential resources in times of need. 
+              Join our network of volunteers and administrators working together for emergency preparedness.</strong>
             </p>
             
             <div className="features-grid">
@@ -30,7 +30,7 @@ const HomePage = () => {
                 <span>Supply Chain Management</span>
               </div>
               <div className="feature-item">
-                <span className="feature-icon">🎯</span>
+                <span className="feature-icon">🗺️</span>
                 <span>Assignment Coordination</span>
               </div>
               <div className="feature-item">
@@ -79,7 +79,7 @@ const HomePage = () => {
 
       <div className="info-section">
         <div className="info-content">
-          <h2>How bachavSetu Works</h2>
+          <h2>How BachavSetu Works</h2>
           <div className="workflow-steps">
             <div className="step">
               <div className="step-number">1</div>

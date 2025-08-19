@@ -66,7 +66,7 @@ function Dashboard() {
   return (
     <div className="dashboard">
       <header className="dashboard-header">
-        <h1>🚒 bachavSetu - Disaster Management System</h1>
+        <h1>🚒 BachavSetu - Disaster Relief Platform </h1>
         <UserInfo />
       </header>
 

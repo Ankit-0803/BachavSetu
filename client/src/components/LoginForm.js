@@ -75,7 +75,7 @@ const LoginForm = () => {
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-header">
-          <h1>🚒 bachavSetu</h1>
+          <h1>🚒 BachavSetu</h1>
           <h2>Welcome Back</h2>
           <p>Sign in to continue to your dashboard</p>
         </div>

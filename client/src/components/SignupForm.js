@@ -94,7 +94,7 @@ const SignupForm = () => {
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-header">
-          <h1>🚒 bachavSetu</h1>
+          <h1>🚒 BachavSetu</h1>
           <h2>Create Account</h2>
           <p>Join our disaster response community</p>
         </div>

@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
   createAssignmentFromIncident,
-  updateIncidentStatus
+  updateIncidentStatus,
 } from '../features/incidents/incidentsSlice';
-import { addAssignment } from '../features/assignments/assignmentsSlice';
+import { fetchAssignments } from '../features/assignments/assignmentsSlice';
 import IncidentModal from './IncidentModal';
 import './IncidentsList.css';
 
@@ -14,51 +14,59 @@ const IncidentsList = ({ incidents, isAdmin }) => {
   const dispatch = useDispatch();
   const [selected, setSelected] = useState(null);
 
-  const getSeverityColor = sev => {
+  const getSeverityColor = (sev) => {
     switch (sev) {
-      case 'LOW': return '#28a745';
-      case 'MEDIUM': return '#ffc107';
-      case 'HIGH': return '#fd7e14';
-      case 'CRITICAL': return '#dc3545';
-      default: return '#6c757d';
+      case 'LOW':
+        return '#28a745';
+      case 'MEDIUM':
+        return '#ffc107';
+      case 'HIGH':
+        return '#fd7e14';
+      case 'CRITICAL':
+        return '#dc3545';
+      default:
+        return '#6c757d';
     }
   };
 
-  const getStatusColor = status => {
+  const getStatusColor = (status) => {
     switch (status) {
-      case 'REPORTED': return '#007bff';
-      case 'ASSIGNED': return '#17a2b8';
-      case 'IN_PROGRESS': return '#ffc107';
-      case 'RESOLVED': return '#28a745';
-      default: return '#6c757d';
+      case 'REPORTED':
+        return '#007bff';
+      case 'ASSIGNED':
+        return '#17a2b8';
+      case 'IN_PROGRESS':
+        return '#ffc107';
+      case 'RESOLVED':
+        return '#28a745';
+      default:
+        return '#6c757d';
     }
   };
 
-  const getCategoryIcon = category => {
+  const getCategoryIcon = (category) => {
     const icons = {
       FIRE: '🔥',
       FLOOD: '🌊',
       EARTHQUAKE: '🏠',
       MEDICAL: '🏥',
       ACCIDENT: '🚗',
-      OTHER: '⚠️'
+      OTHER: '⚠️',
     };
     return icons[category] || '⚠️';
   };
 
-  // Fixed formatLocation function
   const formatLocation = (coordinates) => {
     if (!coordinates || !Array.isArray(coordinates) || coordinates.length !== 2) {
       return 'Unknown';
     }
-    
+
     const [longitude, latitude] = coordinates;
-    
-    // Check if both values are valid numbers
+
     if (typeof longitude !== 'number' || typeof latitude !== 'number') {
       return 'Invalid coordinates';
     }
-    
+
     return `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
   };
 
@@ -67,7 +75,7 @@ const IncidentsList = ({ incidents, isAdmin }) => {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -76,12 +84,10 @@ const IncidentsList = ({ incidents, isAdmin }) => {
     if (window.confirm('Create an assignment from this incident?')) {
       try {
         const result = await dispatch(createAssignmentFromIncident({ id, supplies: [] })).unwrap();
-        
-        // Add the new assignment to assignments list
-        if (result.assignment) {
-          dispatch(addAssignment(result.assignment));
-        }
-        
+
+        // Fetch assignments to refresh list after creation
+        dispatch(fetchAssignments());
+
         alert('Assignment created successfully!');
       } catch (error) {
         alert('Error creating assignment: ' + error.message);
@@ -94,14 +100,13 @@ const IncidentsList = ({ incidents, isAdmin }) => {
     dispatch(updateIncidentStatus({ id, status: e.target.value }));
   };
 
-  // Handle cases where incidents might be null or undefined
   if (!incidents || incidents.length === 0) {
     return (
       <div className="incidents-list">
         <div className="incidents-empty">
           <div className="empty-icon">📋</div>
           <h3>No Incidents Found</h3>
-          <p>{isAdmin ? 'No incidents have been reported yet' : 'You haven\'t reported any incidents yet'}</p>
+          <p>{isAdmin ? 'No incidents have been reported yet' : "You haven't reported any incidents yet"}</p>
         </div>
       </div>
     );
@@ -110,7 +115,7 @@ const IncidentsList = ({ incidents, isAdmin }) => {
   return (
     <>
       <div className="incidents-list">
-        {incidents.map(inc => (
+        {incidents.map((inc) => (
           <div
             key={inc._id}
             className="incident-card"
@@ -118,11 +123,7 @@ const IncidentsList = ({ incidents, isAdmin }) => {
           >
             <div className="cover-container">
               <img
-                src={
-                  inc.images?.[0]
-                    ? `${BACKEND_URL}${inc.images}`
-                    : '/default-incident.png'
-                }
+                src={inc.images?.[0] ? `${BACKEND_URL}${inc.images}` : '/default-incident.png'}
                 alt="Incident cover"
                 className="cover-photo"
                 onError={(e) => {
@@ -130,7 +131,7 @@ const IncidentsList = ({ incidents, isAdmin }) => {
                 }}
               />
               <div className="severity-overlay">
-                <span 
+                <span
                   className="severity-badge"
                   style={{ backgroundColor: getSeverityColor(inc.severity) }}
                 >
@@ -146,9 +147,9 @@ const IncidentsList = ({ incidents, isAdmin }) => {
                 </span>
                 <h3>{inc.title}</h3>
               </div>
-              
+
               <p className="incident-description">{inc.description}</p>
-              
+
               {/* Supply Preview */}
               {inc.requestedSupplies && inc.requestedSupplies.length > 0 && (
                 <div className="supplies-preview">
@@ -175,9 +176,7 @@ const IncidentsList = ({ incidents, isAdmin }) => {
                 >
                   {inc.status.replace('_', ' ')}
                 </span>
-                <span className="badge category">
-                  {inc.category}
-                </span>
+                <span className="badge category">{inc.category}</span>
               </div>
 
               <div className="incident-metadata">
@@ -202,18 +201,16 @@ const IncidentsList = ({ incidents, isAdmin }) => {
                 {inc.status === 'REPORTED' && !inc.assignmentCreated && (
                   <button
                     className="action-btn create-assignment"
-                    onClick={e => handleCreateAssignment(e, inc._id)}
+                    onClick={(e) => handleCreateAssignment(e, inc._id)}
                   >
                     🎯 Create Assignment
                   </button>
                 )}
-                
+
                 {inc.assignmentCreated && (
-                  <div className="assignment-info">
-                    ✅ Assignment Created
-                  </div>
+                  <div className="assignment-info">✅ Assignment Created</div>
                 )}
-                
+
                 {inc.status !== 'RESOLVED' && (
                   <select
                     className="status-select"
@@ -221,7 +218,7 @@ const IncidentsList = ({ incidents, isAdmin }) => {
                     onChange={e => handleStatusUpdate(e, inc._id)}
                     onClick={e => e.stopPropagation()}
                   >
-                    {['REPORTED','ASSIGNED','IN_PROGRESS','RESOLVED'].map(s => (
+                    {['REPORTED', 'ASSIGNED', 'IN_PROGRESS', 'RESOLVED'].map((s) => (
                       <option key={s} value={s}>
                         {s.replace('_', ' ')}
                       </option>
@@ -234,7 +231,6 @@ const IncidentsList = ({ incidents, isAdmin }) => {
         ))}
       </div>
 
-      {/* Incident Modal */}
       {selected && (
         <IncidentModal
           incident={selected}
