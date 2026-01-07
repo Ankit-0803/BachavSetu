@@ -52,7 +52,7 @@ BachavSetu is a disaster relief platform that makes emergency management faster,
 
 - **Frontend:** [https://bachav-setu.vercel.app](https://bachav-setu.vercel.app)
 - **Backend:** [https://bachavsetu-9ygx.onrender.com](https://bachavsetu-9ygx.onrender.com)
-Video Demo- [https://drive.google.com/file/d/108p6_b4BJFXB5W_FjiCnZEUcmK6Eul1A/view?usp=sharing](https://drive.google.com/file/d/108p6_b4BJFXB5W_FjiCnZEUcmK6Eul1A/view?usp=sharing)
+- **Video Demo** [https://drive.google.com/file/d/108p6_b4BJFXB5W_FjiCnZEUcmK6Eul1A/view?usp=sharing](https://drive.google.com/file/d/108p6_b4BJFXB5W_FjiCnZEUcmK6Eul1A/view?usp=sharing)
 ---
 
 Empowering communities with rapid, organized disaster response.
